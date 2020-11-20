@@ -7,9 +7,11 @@ LG paper review QnA session - Knowledge Distillation
 
 2. Knowledge Distillation by On-the-Fly Native Ensemble, 18`NIPS, (https://arxiv.org/abs/1806.04606)
 
+3. 
+
 
 -------
 ### TAs
 
-김성년 ksn4397@kaist.ac.kr
-최진환 jinhwanchoi@kaist.ac.kr
+- 김성년 ksn4397@kaist.ac.kr
+- 최진환 jinhwanchoi@kaist.ac.kr
