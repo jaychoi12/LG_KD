@@ -227,6 +227,7 @@ class ONE_ResNet(nn.Module):
         return x
     def forward(self, x):
 
+        # all branches share lower level layers
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)    # 32x32
@@ -234,6 +235,7 @@ class ONE_ResNet(nn.Module):
         x = self.layer1(x)  # 32x32
         x = self.layer2(x)  # 16x16
 
+        # x_c is used to give weight to each branch 
         x_c = self.avgpool_c(x)
         x_c = x_c.view(x_c.size(0), -1)
 
@@ -242,6 +244,7 @@ class ONE_ResNet(nn.Module):
         x_c=F.relu(x_c)
         x_c = F.softmax(x_c,dim=1)
 
+        # high level layer is used to make branches
         x_3_1 = self.layer3_1(x)  # 8x8
         x_3_2 = self.layer3_2(x)
         x_3_3 = self.layer3_3(x)
@@ -254,6 +257,7 @@ class ONE_ResNet(nn.Module):
         x_3_3 = self.avgpool(x_3_3)
         x_3_3 = x_3_3.view(x_3_3.size(0), -1)
 
+        # Each branch output is weighted by x_c to make teacher ensemble logit
         x_3_1 = self.classfier3_1(x_3_1)
         x_3_2 = self.classfier3_2(x_3_2)
         x_3_3 = self.classfier3_3(x_3_3)
