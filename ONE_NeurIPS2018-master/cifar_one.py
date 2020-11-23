@@ -286,7 +286,7 @@ def train(trainloader, model, criterion, criterion_kl, optimizer, epoch, use_cud
 
 
         if use_cuda:
-            inputs, targets = inputs.cuda(), targets.cuda(async=True)
+            inputs, targets = inputs.cuda(), targets.cuda(non_blocking=True)
         inputs, targets = torch.autograd.Variable(inputs), torch.autograd.Variable(targets)
 
         outputs1, outputs2, outputs3, outputs4 = model(inputs)
@@ -299,17 +299,17 @@ def train(trainloader, model, criterion, criterion_kl, optimizer, epoch, use_cud
         prec1_c1, prec5_c1 = accuracy(outputs1.data, targets.data, topk=(1, 5))
         prec1_c2, prec5_c2 = accuracy(outputs2.data, targets.data, topk=(1, 5))
         prec1_c3, prec5_c3 = accuracy(outputs3.data, targets.data, topk=(1, 5))
-        top1_c1.update(prec1_c1[0], inputs.size(0))
-        top5_c1.update(prec5_c1[0], inputs.size(0))
+        top1_c1.update(prec1_c1.item(), inputs.size(0))
+        top5_c1.update(prec5_c1.item(), inputs.size(0))
         loss = loss_cross+loss_kl
-        losses_kl.update(loss_kl.data[0], inputs.size(0))
-        losses.update(loss.data[0], inputs.size(0))
-        top1_c2.update(prec1_c2[0], inputs.size(0))
-        top5_c2.update(prec5_c2[0], inputs.size(0))
-        top1_c3.update(prec1_c3[0], inputs.size(0))
-        top5_c3.update(prec5_c3[0], inputs.size(0))
-        top1_t.update(prec1_t[0], inputs.size(0))
-        top5_t.update(prec5_t[0], inputs.size(0))
+        losses_kl.update(loss_kl.data, inputs.size(0))
+        losses.update(loss.data, inputs.size(0))
+        top1_c2.update(prec1_c2.item(), inputs.size(0))
+        top5_c2.update(prec5_c2.item(), inputs.size(0))
+        top1_c3.update(prec1_c3.item(), inputs.size(0))
+        top5_c3.update(prec5_c3.item(), inputs.size(0))
+        top1_t.update(prec1_t.item(), inputs.size(0))
+        top5_t.update(prec5_t.item(), inputs.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -363,11 +363,11 @@ def test(testloader, model, use_cuda):
         prec1_c2, _ = accuracy(outputs2.data, targets.data, topk=(1, 5))
         prec1_c3, _ = accuracy(outputs3.data, targets.data, topk=(1, 5))
         prec1_en, _ = accuracy(outputs4.data, targets.data, topk=(1, 5))
-        top1_c1.update(prec1_c1[0], inputs.size(0))
-        top1_c2.update(prec1_c2[0], inputs.size(0))
-        top1_c3.update(prec1_c3[0], inputs.size(0))
-        top1_avg.update((prec1_c1[0]+prec1_c2[0]+prec1_c3[0])/3, inputs.size(0))
-        top1_t.update(prec1_en[0], inputs.size(0))
+        top1_c1.update(prec1_c1.item(), inputs.size(0))
+        top1_c2.update(prec1_c2.item(), inputs.size(0))
+        top1_c3.update(prec1_c3.item(), inputs.size(0))
+        top1_avg.update((prec1_c1.item()+prec1_c2.item()+prec1_c3.item())/3, inputs.size(0))
+        top1_t.update(prec1_en.item(), inputs.size(0))
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
